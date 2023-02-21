@@ -30,7 +30,7 @@ void real_main(char *in_file)
 		double *grid;
     char name[STD_STRING_LENGTH], aux[STD_STRING_LENGTH];
     int count;
-    FILE *datafilep, *chiprimefilep, *swaptrackfilep, *multicanonic_acc_filep, *topchar_tcorr_filep;
+    FILE *datafilep, *chiprimefilep, *swaptrackfilep, *multicanonic_acc_filep, *topchar_tcorr_filep, *datafilep_top0, *datafilep_top1, *datafilep_top2, *datafilep_top3;
     time_t time1, time2;
 
 
@@ -47,7 +47,7 @@ void real_main(char *in_file)
     initrand(param.d_randseed);
 
     // open data_file
-    init_data_file(&datafilep, &chiprimefilep, &topchar_tcorr_filep, &param);
+    init_data_file(&datafilep, &datafilep_top0, &datafilep_top1, &datafilep_top2, &datafilep_top3, &chiprimefilep, &topchar_tcorr_filep, &param);
 		
 	// open swap tracking file
 	init_swap_track_file(&swaptrackfilep, &param);
@@ -128,6 +128,10 @@ void real_main(char *in_file)
 
     // close data file
     fclose(datafilep);
+    fclose(datafilep_top0);
+  	fclose(datafilep_top1);
+		fclose(datafilep_top2);
+		fclose(datafilep_top3);
 		if (param.d_chi_prime_meas==1) fclose(chiprimefilep);
 		if (param.d_topcharge_tcorr_meas==1) fclose(topchar_tcorr_filep);
 		

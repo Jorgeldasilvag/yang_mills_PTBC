@@ -20,6 +20,9 @@ typedef struct Rectangle {
 
 
 // these are the functions to be used in shwitching between different indices
+int max(int a, int b);
+int min(int a, int b);
+int planeid(int const i, int const j); //plane ID
 long (*cart_to_si)(int const * const cartcoord, GParam const * const param); // cartesian coordinates -> single index
 void (*si_to_cart)(int *cartcoord, long si, GParam const * const param);     // single index -> cartesian coordinates
 long (*lex_to_si)(long lex, GParam const * const param);          // lexicographic -> single index

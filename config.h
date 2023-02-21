@@ -2,7 +2,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Activate the computation of the hash function of the configuration */
-#define HASH_MODE /**/
+/* #undef HASH_MODE */
 
 /* Define to 1 if you have the <complex.h> header file. */
 #define HAVE_COMPLEX_H 1
@@ -23,7 +23,7 @@
 /* #undef HAVE_OMP_H */
 
 /* Define to 1 if you have the <openssl/md5.h> header file. */
-#define HAVE_OPENSSL_MD5_H 1
+/* #undef HAVE_OPENSSL_MD5_H */
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1

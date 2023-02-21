@@ -3,7 +3,6 @@
 
 #include"../include/macro.h"
 
-#include<malloc.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
@@ -151,7 +150,7 @@ double delta_action_swap(Gauge_Conf const * const GC, Geometry const * const geo
 	K_a = (GC[a].C[r][i])*(GC[a].C[nnp(geo, r, i)][j])*(GC[a].C[nnp(geo, r, j)][i])*(GC[a].C[r][j]);
 	K_b = (GC[b].C[r][i])*(GC[b].C[nnp(geo, r, i)][j])*(GC[b].C[nnp(geo, r, j)][i])*(GC[b].C[r][j]);
 
-	// (swapped action - unswapped action) = beta * delta_K * delta_plaq
+	// (swapped action - unswapped action) = beta * delta_K * delta_plaq 
 	delta = param->d_beta * (K_a - K_b) * (re_tr_plaq_a - re_tr_plaq_b);
 	
 	return delta;
@@ -202,7 +201,7 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 
 // metropolis step to swap replica a and b with probability p
 void metropolis_single_swap(Gauge_Conf *GC, int const a, int const b, double const p, Acc_Utils *acc_counters)
-  {
+	{
 	// acceptance initialized to 1
 	int acc=1;
 	// increase counter of tried swaps for replicas (a, a+1)
@@ -223,9 +222,17 @@ void metropolis_single_swap(Gauge_Conf *GC, int const a, int const b, double con
 		{
 		// swap of configurations
 		GAUGE_GROUP **aux;
+		double complex **helper;
+
 		aux=GC[a].lattice;
+		helper=GC[a].ztw;
+
 		GC[a].lattice=GC[b].lattice;
+		GC[a].ztw=GC[b].ztw;
+
 		GC[b].lattice=aux;
+		GC[b].ztw=helper;
+
 		acc_counters->num_accepted_swap[a]++; // increase counter of successfull swaps for replicas (a, a+1)
 
 		// swap of labels
@@ -234,42 +241,44 @@ void metropolis_single_swap(Gauge_Conf *GC, int const a, int const b, double con
 		GC[a].conf_label=GC[b].conf_label;
 		GC[b].conf_label=aux_label;
 		}
-  }
+	}
 
 // translation of one lattice spacing of the configuration
 // direction is chosen randomly, verse is always positive
 void conf_translation(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param)
-  {
-  double aux;
-  int dir=0,i;
+	{
+	double aux;
+	int dir,i;
 	long s;
 	Gauge_Conf aux_conf;
   
-  // extract random direction
+	// extract random direction
 	aux=STDIM*casuale();
 	for(i=0;i<STDIM;i++)
-		{
+	{
 		if ( (aux>=i) && (aux<(i+1)) ) dir=i;
-		}
+	}
 
-  // copy the conf in an auxiliary one (should be defined outside and passed to the function?)
+	// copy the conf in an auxiliary one 
 	init_gauge_conf_from_gauge_conf(&aux_conf, GC, param); // now aux_conf=GC
 
-  // translation in direction +dir
-  #ifdef OPENMP_MODE
-  #pragma omp parallel for num_threads(NTHREADS) private(s)
-  #endif
-	for(s=0;s<(STDIM*(param->d_volume));s++)
-		{
+	// translation in direction +dir
+	#ifdef OPENMP_MODE
+	#pragma omp parallel for num_threads(NTHREADS) private(s)
+	#endif
+	for(s=0; s<(param->d_n_planes)*(param->d_volume); s++)
+	{
 		// s = j * volume + r
 		long r = s % (param->d_volume);
 		int j = (int) ( (s-r)/(param->d_volume) );
-		equal(&(GC->lattice[r][j]), &(aux_conf.lattice[nnm(geo,r,dir)][j]) );
-		}
+		if(j<STDIM) equal(&(GC->lattice[r][j]), &(aux_conf.lattice[nnm(geo,r,dir)][j]) );
+		GC->ztw[r][j] = aux_conf.ztw[nnm(geo,r,dir)][j];
+	}
 
 	// free auxiliary conf
-  free_gauge_conf(&aux_conf, param);
-  }
+	free_twist_cond(&aux_conf, param);
+	free_gauge_conf(&aux_conf, param);
+	}
 	
 void init_swap_acc_arrays(Acc_Utils *acc_counters, GParam const * const param)
   {

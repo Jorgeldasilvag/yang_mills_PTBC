@@ -49,7 +49,6 @@ inline void one_SuN(SuN * restrict A)
      }
   }
 
-
 // A=0
 inline void zero_SuN(SuN * restrict A)
   {

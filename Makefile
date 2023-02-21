@@ -356,13 +356,13 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread/missing aclocal-1.15
+ACLOCAL = ${SHELL} /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread/missing autoconf
-AUTOHEADER = ${SHELL} /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread/missing autoheader
-AUTOMAKE = ${SHELL} /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread/missing automake-1.15
-AWK = gawk
+AUTOCONF = ${SHELL} /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0/missing autoconf
+AUTOHEADER = ${SHELL} /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0/missing autoheader
+AUTOMAKE = ${SHELL} /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0/missing automake-1.15
+AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -O3
@@ -371,12 +371,12 @@ CPPFLAGS =
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
-ECHO_C = 
-ECHO_N = -n
+ECHO_C = \c
+ECHO_N = 
 ECHO_T = 
-EGREP = /bin/grep -E
+EGREP = /usr/bin/grep -E
 EXEEXT = 
-GREP = /bin/grep
+GREP = /usr/bin/grep
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -384,10 +384,10 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lm -lcrypto 
+LIBS = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread/missing makeinfo
-MKDIR_P = /bin/mkdir -p
+MAKEINFO = ${SHELL} /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0/missing makeinfo
+MKDIR_P = ./install-sh -c -d
 N_c = 3
 Num_levels = 
 Num_threads = 1
@@ -402,14 +402,14 @@ PACKAGE_URL =
 PACKAGE_VERSION = 0.7.3
 PATH_SEPARATOR = :
 SET_MAKE = 
-SHELL = /bin/bash
+SHELL = /bin/sh
 STRIP = 
 ST_dim = 
 VERSION = 0.7.3
-abs_builddir = /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread
-abs_srcdir = /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread
-abs_top_builddir = /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread
-abs_top_srcdir = /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread
+abs_builddir = /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0
+abs_srcdir = /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0
+abs_top_builddir = /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0
+abs_top_srcdir = /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -428,7 +428,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /mnt/c/Users/Asus/Desktop/yang-mills-hpt-multithread/install-sh
+install_sh = ${SHELL} /Users/jorgeluisdasilvagolan/Documents/Codes/LatticePTBC/yang_mills_pt/xurxo2.0/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -746,7 +746,7 @@ yang_mills_gradient_flow_SOURCES = ./src/yang_mills_gradient_flow.c \
                        $(tens_prod) \
                        $(u1)
 
-AM_CFLAGS = -std=c99 -O3 -Wall -Wextra -Werror -pedantic -Wconversion 
+AM_CFLAGS = -std=c99 -O3 -Wall -Wextra -pedantic -Wconversion 
 CLEANFILES = dati.dat chi_prime_cool.dat log.dat dati.log conf.dat* ml.dat template_input.in swap_acc.dat* swap_track.dat* multicanonic_acc.dat* topo_tcorr_cool.dat*
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am

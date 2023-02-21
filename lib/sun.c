@@ -20,7 +20,6 @@
 // A=1
 void one_SuN(SuN *A);
 
-
 // A=0
 void zero_SuN(SuN *A);
 

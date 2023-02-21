@@ -9,6 +9,28 @@
 #include"../include/geometry.h"
 #include"../include/gparam.h"
 
+int min(int a, int b) { return a > b ? b : a; }
+int max(int a, int b) { return a > b ? a : b; }
+
+//plane i-j -> single index, for twist factors
+int planeid(int const i, int const j)
+  {
+    if(i==0&&j==1) return 0;
+    if(i==0&&j==2) return 1;
+    if(i==0&&j==3) return 2;
+    if(i==1&&j==2) return 3;
+    if(i==1&&j==3) return 4;
+    if(i==2&&j==3) return 5;
+    if(i==1&&j==0) return 6;
+    if(i==2&&j==0) return 7;
+    if(i==3&&j==0) return 8;
+    if(i==2&&j==1) return 9;
+    if(i==3&&j==1) return 10;
+    if(i==3&&j==2) return 11;
+    fprintf(stderr, "Not equal directions allowed (%s, %d)\n", __FILE__, __LINE__);
+        exit(EXIT_FAILURE);
+  }
+
 // single index 4d = even/odd lexicographic index 4d
 // single index 3d = even/odd lexicographic index 3d
 void init_indexing_lexeo(void)
@@ -255,8 +277,6 @@ void test_geometry(Geometry const * const geo, GParam const * const param)
         }
       }
   }
-
-
 
 //------------ these are not to be used outside geometry.c ----------------
 
