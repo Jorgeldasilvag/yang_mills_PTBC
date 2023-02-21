@@ -1302,29 +1302,180 @@ void hierarchical_update_rectangle_with_defect(Gauge_Conf *GC, Geometry const * 
 														Rectangle const * const clover_rectangle,
 														Rectangle const * const swap_rectangle,
 														Acc_Utils *acc_counters)
-	{
+{
 	int j;
+	int ii,jj,a,b;
+	double re_tr_plaq_a_i, re_tr_plaq_b_i, Ka_i, Kb_i,re_tr_plaq_a_f, re_tr_plaq_b_f, Ka_f, Kb_f;
+	double Sa_i,Sb_i,Sa_f,Sb_f,delta;
+	long r;
+
+	// replicas to compare delta action before and after swaping
+	a = 0;
+	b = 1;
+
 	if(hierarc_level==((param->d_N_hierarc_levels)-1))
-		{
+	{
 		for(j=0;j<param->d_N_sweep_rect[hierarc_level];j++) 
-			{
-		update_rectangle_with_defect(GC,geo,param, &(most_update[hierarc_level]), &(clover_rectangle[hierarc_level]) );
-			if(param->d_N_replica_pt>1) swap(GC, geo, param, swap_rectangle, acc_counters);
-		conf_translation(&(GC[0]), geo, param);
-		}
-		} // end if
-	else
 		{
-		for(j=0;j<param->d_N_sweep_rect[hierarc_level];j++)
+			printf("%d %d %d\n",param->d_N_sweep_rect[hierarc_level],j,hierarc_level);
+			update_rectangle_with_defect(GC,geo,param, &(most_update[hierarc_level]), &(clover_rectangle[hierarc_level]) );
+
+			//intial action replica a
+			Sa_i = 0.0;
+			for(r=0; r<(param->d_volume); r++)
 			{
-			update_rectangle_with_defect(GC,geo,param, &(most_update[hierarc_level]), &(clover_rectangle[hierarc_level]) );	
+				for(ii=0; ii<STDIM; ii++)
+				{
+					for(jj=ii+1; jj<STDIM; jj++)
+					{
+						re_tr_plaq_a_i=plaquettep(&(GC[a]), geo, param, r, ii, jj);
+						Ka_i=(GC[a].C[r][ii])*(GC[a].C[nnp(geo, r, ii)][jj])*(GC[a].C[nnp(geo, r, jj)][ii])*(GC[a].C[r][jj]);
+						Sa_i+=(1.0-Ka_i*re_tr_plaq_a_i);
+					}
+				}
+			}
+			Sa_i*=param->d_beta/(double)NCOLOR;
+
+			//intial action replica b
+			Sb_i = 0.0;
+			for(r=0; r<(param->d_volume); r++)
+			{
+				for(ii=0; ii<STDIM; ii++)
+				{
+					for(jj=ii+1; jj<STDIM; jj++)
+					{
+						re_tr_plaq_b_i=plaquettep(&(GC[b]), geo, param, r, ii, jj);
+						Kb_i=(GC[b].C[r][ii])*(GC[b].C[nnp(geo, r, ii)][jj])*(GC[b].C[nnp(geo, r, jj)][ii])*(GC[b].C[r][jj]);
+						Sb_i+=(1.0-Kb_i*re_tr_plaq_b_i);
+					}
+				}
+			}
+			Sb_i*=param->d_beta/(double)NCOLOR;
+
 			if(param->d_N_replica_pt>1) swap(GC, geo, param, swap_rectangle, acc_counters);
+
+			//final action replica a
+			Sa_f = 0.0;
+			for(r=0; r<(param->d_volume); r++)
+			{
+				for(ii=0; ii<STDIM; ii++)
+				{
+					for(jj=ii+1; jj<STDIM; jj++)
+					{
+						re_tr_plaq_a_f=plaquettep(&(GC[a]), geo, param, r, ii, jj);
+						Ka_f=(GC[a].C[r][ii])*(GC[a].C[nnp(geo, r, ii)][jj])*(GC[a].C[nnp(geo, r, jj)][ii])*(GC[a].C[r][jj]);
+						Sa_f+=(1.0-Ka_f*re_tr_plaq_a_f);
+					}
+				}
+			}
+			Sa_f*=param->d_beta/(double)NCOLOR;
+
+			//final action replica b
+			Sb_f = 0.0;
+			for(r=0; r<(param->d_volume); r++)
+			{
+				for(ii=0; ii<STDIM; ii++)
+				{
+					for(jj=ii+1; jj<STDIM; jj++)
+					{
+						re_tr_plaq_b_f=plaquettep(&(GC[b]), geo, param, r, ii, jj);
+						Kb_f=(GC[b].C[r][ii])*(GC[b].C[nnp(geo, r, ii)][jj])*(GC[b].C[nnp(geo, r, jj)][ii])*(GC[b].C[r][jj]);
+						Sb_f+=(1.0-Kb_f*re_tr_plaq_b_f);
+					}
+				}
+			}
+			Sb_f*=param->d_beta/(double)NCOLOR;
+
+			// delta of actions
+			delta = Sa_f + Sb_f - (Sa_i+Sb_i) ;
+			printf("Probability computed by hand: %.12g\n",delta);
+
+			conf_translation(&(GC[0]), geo, param);
+		}
+	} // end if
+
+	else
+	{
+		for(j=0;j<param->d_N_sweep_rect[hierarc_level];j++)
+		{
+			printf("%d %d %d\n",param->d_N_sweep_rect[hierarc_level],j,hierarc_level);
+			update_rectangle_with_defect(GC,geo,param, &(most_update[hierarc_level]), &(clover_rectangle[hierarc_level]) );	
+
+			//initial action replica a
+			Sa_i = 0.0;
+			for(r=0; r<(param->d_volume); r++)
+			{
+				for(ii=0; ii<STDIM; ii++)
+				{
+					for(jj=ii+1; jj<STDIM; jj++)
+					{
+						re_tr_plaq_a_i=plaquettep(&(GC[a]), geo, param, r, ii, jj);
+						Ka_i=(GC[a].C[r][ii])*(GC[a].C[nnp(geo, r, ii)][jj])*(GC[a].C[nnp(geo, r, jj)][ii])*(GC[a].C[r][jj]);
+						Sa_i+=(1.0-Ka_i*re_tr_plaq_a_i);
+					}
+				}
+			}
+			Sa_i*=param->d_beta/(double)NCOLOR;
+
+			//initial action replica b
+			Sb_i = 0.0;
+			for(r=0; r<(param->d_volume); r++)
+			{
+				for(ii=0; ii<STDIM; ii++)
+				{
+					for(jj=ii+1; jj<STDIM; jj++)
+					{
+						re_tr_plaq_b_i=plaquettep(&(GC[b]), geo, param, r, ii, jj);
+						Kb_i=(GC[b].C[r][ii])*(GC[b].C[nnp(geo, r, ii)][jj])*(GC[b].C[nnp(geo, r, jj)][ii])*(GC[b].C[r][jj]);
+						Sb_i+=(1.0-Kb_i*re_tr_plaq_b_i);
+					}
+				}
+			}
+			Sb_i*=param->d_beta/(double)NCOLOR;
+
+			if(param->d_N_replica_pt>1) swap(GC, geo, param, swap_rectangle, acc_counters);
+
+			//final action replica 1
+			Sa_f = 0.0;
+			for(r=0; r<(param->d_volume); r++)
+			{
+				for(ii=0; ii<STDIM; ii++)
+				{
+					for(jj=ii+1; jj<STDIM; jj++)
+					{
+						re_tr_plaq_a_f=plaquettep(&(GC[a]), geo, param, r, ii, jj);
+						Ka_f=(GC[a].C[r][ii])*(GC[a].C[nnp(geo, r, ii)][jj])*(GC[a].C[nnp(geo, r, jj)][ii])*(GC[a].C[r][jj]);
+						Sa_f+=(1.0-Ka_f*re_tr_plaq_a_f);
+					}
+				}
+			}
+			Sa_f*=param->d_beta/(double)NCOLOR;
+
+			//final action replica 2
+			Sb_f = 0.0;
+			for(r=0; r<(param->d_volume); r++)
+			{
+				for(ii=0; ii<STDIM; ii++)
+				{
+					for(jj=ii+1; jj<STDIM; jj++)
+					{
+						re_tr_plaq_b_f=plaquettep(&(GC[b]), geo, param, r, ii, jj);
+						Kb_f=(GC[b].C[r][ii])*(GC[b].C[nnp(geo, r, ii)][jj])*(GC[b].C[nnp(geo, r, jj)][ii])*(GC[b].C[r][jj]);
+						Sb_f+=(1.0-Kb_f*re_tr_plaq_b_f);
+					}
+				}
+			}
+			Sb_f*=param->d_beta/(double)NCOLOR;
+
+			// delta of actions
+			delta = Sa_f + Sb_f - (Sa_i+Sb_i) ;
+			printf("Probability computed by hand: %.12g\n",delta);
+
 			conf_translation(&(GC[0]), geo, param);
 			hierarchical_update_rectangle_with_defect(GC,geo,param,(hierarc_level+1),most_update,clover_rectangle,swap_rectangle,acc_counters);
-			}
-		} // end else
-
-	}
+		}
+	} // end else
+}
 	
 // perform a single step of parallel tempering with hierarchical update
 void parallel_tempering_with_hierarchical_update(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param,

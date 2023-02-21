@@ -28,6 +28,11 @@ void real_main(char *in_file)
 	Acc_Utils acc_counters;
 	int L_R_swap=1;
 
+	//long r;
+	//int i,j;
+	//double re_tr_plaq_a_i, Ka_i;
+	//double Sa_i=0.0;
+
 	char name[STD_STRING_LENGTH], aux[STD_STRING_LENGTH];
 	int count;
 	FILE *datafilep, *chiprimefilep, *swaptrackfilep, *topchar_tcorr_filep, *datafilep_top0, *datafilep_top1, *datafilep_top2, *datafilep_top3;
@@ -68,10 +73,30 @@ void real_main(char *in_file)
 	// init acceptances array
 	init_swap_acc_arrays(&acc_counters, &param);
 
-    // Monte Carlo begin
-    time(&time1);
+	//Sa_i = 0.0;
+	//for(r=0; r<(param.d_volume); r++)
+	//{
+	//	for(i=0; i<STDIM; i++)
+	//	{
+	//		for(j=i+1; j<STDIM; j++)
+	//		{
+	//			re_tr_plaq_a_i=plaquettep(&(GC[0]), &geo, &param, r, i, j);
+	//			Ka_i=(GC[0].C[r][i])*(GC[0].C[nnp(&geo, r, i)][j])*(GC[0].C[nnp(&geo, r, j)][i])*(GC[0].C[r][j]);
+	//			Sa_i+=(1.0-Ka_i*re_tr_plaq_a_i);
+	//		}
+	//	}
+	//}
+	//Sa_i*=param.d_beta*(double)NCOLOR;
+	//printf("%.12g\n",Sa_i);
 
-    for(count=0; count < param.d_sample; count++)
+	//plaquette(&(GC[0]), &geo, &param, &plaqs, &plaqt);
+	//pla = 0.5*(plaqs+plaqt);
+	//printf("%.12g\n",pla);
+
+	// Monte Carlo begin
+	time(&time1);
+
+	for(count=0; count < param.d_sample; count++)
 	{
 		// perform a single step of parallel tempering wth hierarchical update and print state of replica swaps
 		parallel_tempering_with_hierarchical_update(GC, &geo, &param, most_update, clover_rectangle, &swap_rectangle, &acc_counters);
@@ -95,7 +120,7 @@ void real_main(char *in_file)
 			}
 		}
 
-       // save homogeneous configuration for offline analysis
+		// save homogeneous configuration for offline analysis
 		if(param.d_saveconf_analysis_every!=0)
 		{
 			if(GC[0].update_index % param.d_saveconf_analysis_every == 0 )
@@ -109,48 +134,48 @@ void real_main(char *in_file)
 		}
 	}
 
-    time(&time2);
-    // Monte Carlo end
+	time(&time2);
+	// Monte Carlo end
 
-    // close data file
-    fclose(datafilep);
-    fclose(datafilep_top0);
-  	fclose(datafilep_top1);
-		fclose(datafilep_top2);
-		fclose(datafilep_top3);
-		if (param.d_chi_prime_meas==1) fclose(chiprimefilep);
-		if (param.d_topcharge_tcorr_meas==1) fclose(topchar_tcorr_filep);
-		
+	// close data file
+	fclose(datafilep);
+	fclose(datafilep_top0);
+	fclose(datafilep_top1);
+	fclose(datafilep_top2);
+	fclose(datafilep_top3);
+	if (param.d_chi_prime_meas==1) fclose(chiprimefilep);
+	if (param.d_topcharge_tcorr_meas==1) fclose(topchar_tcorr_filep);
+
 	// close swap tracking file
 	if (param.d_N_replica_pt > 1) fclose(swaptrackfilep);
 
-    // save configurations
-    if (param.d_saveconf_back_every!=0)
-    {
-      write_replica_on_file(GC, &param);
-    }
+	// save configurations
+	if (param.d_saveconf_back_every!=0)
+	{
+	write_replica_on_file(GC, &param);
+	}
 
-    // print simulation details
-    print_parameters_local_pt(&param, time1, time2);
-		
+	// print simulation details
+	print_parameters_local_pt(&param, time1, time2);
+
 	// print acceptances of parallel tempering
 	print_acceptances(&acc_counters, &param);
 
-    // free gauge configurations
-    free_replica(GC, &param);
+	// free gauge configurations
+	free_replica(GC, &param);
 
-    // free geometry
-    free_geometry(&geo, &param);
-		
+	// free geometry
+	free_geometry(&geo, &param);
+
 	// free rectangles for hierarchical update
 	free_rect_hierarc(most_update, clover_rectangle, &param);
-		
+
 	// free rectangle for swap probability evaluation
 	free_rect(&swap_rectangle);
-		
+
 	// free acceptances array
 	end_swap_acc_arrays(&acc_counters, &param);
-		
+
 	// free hierarchical update parameters
 	free_hierarc_params(&param);
 }
@@ -163,31 +188,31 @@ void print_template_input(void)
 	fp=fopen("template_input.example", "w");
 
 	if(fp==NULL)
-    {
+	 {
 		fprintf(stderr, "Error in opening the file template_input.example (%s, %d)\n", __FILE__, __LINE__);
 		exit(EXIT_FAILURE);
-    }
+	 }
 	else
 	{
-		fprintf(fp,"size 4 4 4 4  # Nt Nx Ny Nz\n");
+		fprintf(fp,"size 12 4 4 12  # Nt Nx Ny Nz\n");
 		fprintf(fp,"\n");
 		fprintf(fp,"# twist parameters\n");
 		fprintf(fp,"k_twist 0 0 0 1 0 0 # ktwist on the plane 01,02,03,12,13,23");
 		fprintf(fp,"\n");
 		fprintf(fp,"# parallel tempering parameters\n");
-		fprintf(fp,"defect_dir    1             # choose direction of defect boundary: 0->t, 1->x, 2->y, 3->z\n");
-		fprintf(fp,"defect_size   1 1 1         # size of the defect (order: y-size z-size t-size)\n");
-		fprintf(fp,"N_replica_pt  2    0.0 1.0  # number of parallel tempering replica ____ boundary conditions coefficients\n");
+		fprintf(fp,"defect_dir    0             # choose direction of defect boundary: 0->t, 1->x, 2->y, 3->z\n");
+		fprintf(fp,"defect_size   2 2 2         # size of the defect (order: y-size z-size t-size)\n");
+		fprintf(fp,"N_replica_pt  10    1.0 0.876 0.76 0.652 0.56 0.468 0.369 0.261 0.143 0.0  # number of parallel tempering replica ____ boundary conditions coefficients\n");
 		fprintf(fp,"\n");
 		fprintf(fp,"# hierarchical update parameters\n");
 		fprintf(fp,"# Order: num of hierarc levels ____ extension of rectangles ____ num of sweeps per rectangle\n");
-		fprintf(fp,"hierarc_upd 2    2 1    1 1\n");
+		fprintf(fp,"hierarc_upd 2    2 1    3 4\n");
 		fprintf(fp,"\n");
 		fprintf(fp,"# Simulations parameters\n");
-		fprintf(fp, "beta  6.000\n");
-		fprintf(fp, "theta 10.0\n");
+		fprintf(fp, "beta  6.600\n");
+		fprintf(fp, "theta 0.0\n");
 		fprintf(fp,"\n");
-		fprintf(fp, "sample     10\n");
+		fprintf(fp, "sample     1\n");
 		fprintf(fp, "thermal    0\n");
 		fprintf(fp, "overrelax  5\n");
 		fprintf(fp, "measevery  1\n");
@@ -203,8 +228,8 @@ void print_template_input(void)
 		fprintf(fp,"\n");
 		fprintf(fp, "#for gradient flow evolution\n");
 		fprintf(fp, "gfstep      0.01    # integration step for gradient flow\n");
-		fprintf(fp, "num_gfsteps 1000     # number of integration steps for gradient flow\n");
-		fprintf(fp, "gf_meas_each 1000       # compute observables every <gf_meas_each> integration steps during the gradient flow\n");
+		fprintf(fp, "num_gfsteps 100     # number of integration steps for gradient flow\n");
+		fprintf(fp, "gf_meas_each 100       # compute observables every <gf_meas_each> integration steps during the gradient flow\n");
 		fprintf(fp,"\n");
 		fprintf(fp, "# output files\n");
 		fprintf(fp, "conf_file             conf.dat\n");
@@ -217,7 +242,7 @@ void print_template_input(void)
 		fprintf(fp, "\n");
 		fprintf(fp, "randseed 0    # (0=time)\n");
 		fclose(fp);
-    }
+	 }
 }
 
 int main (int argc, char **argv)
@@ -268,20 +293,20 @@ int main (int argc, char **argv)
 
 		return EXIT_SUCCESS;
 	}
-    else
+	 else
 	{
 		if(strlen(argv[1]) >= STD_STRING_LENGTH)
 		{
 		fprintf(stderr, "File name too long. Increse STD_STRING_LENGTH in /include/macro.h\n");
 		return EXIT_SUCCESS;
-        }
+		  }
 		else
 		{
 			#if(STDIM==4 && NCOLOR>1)
 				strcpy(in_file, argv[1]);
 				real_main(in_file);
 				return EXIT_SUCCESS;
-    		#else
+			#else
 				fprintf(stderr, "Parallel tempering of volume defect not implemented for STDIM =/= 4 and N_color < 2.\n");
 				return EXIT_SUCCESS;
 			#endif

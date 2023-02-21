@@ -120,6 +120,8 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 			metro_swap_prob[a] += delta_action_swap(GC, geo, param, r, i, j, a, b);
 			}
 		}
+	// delta action to compare
+	printf("Probability delta_action_swap: %.12g\n",metro_swap_prob[0]);
 	
 	// do the swaps
 	#ifdef OPENMP_MODE
