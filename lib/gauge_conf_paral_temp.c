@@ -21,8 +21,10 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
   {
 	int aux_i, i, j, err, num_swaps, is_even, is_even_first;
 	long k, s, num_even, num_odd, num_swaps_1, num_swaps_2;
-	double *metro_swap_prob;
-	
+	double *metro_swap_prob,*save_swap_prob;
+	double *complete_swap_prob;
+	int rep,ii,jj;
+	long m;
 	// for each value of defect_dir, determine the three orthogonal directions to it
 	int perp_dir[4][3] = { {1, 2, 3}, {0, 2, 3}, {0, 1, 3}, {0, 1, 2} };
 	
@@ -36,10 +38,25 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 		fprintf(stderr, "Problems in allocating the acceptances array (%s, %d)\n", __FILE__, __LINE__);
 		exit(EXIT_FAILURE);
 		}
-	
+	// define auxiliary array to store metropolis swap probabilities
+	err=posix_memalign( (void **) &(complete_swap_prob), (size_t) DOUBLE_ALIGN, (size_t) num_swaps * sizeof(double));
+	if(err!=0)
+		{
+		fprintf(stderr, "Problems in allocating the acceptances array (%s, %d)\n", __FILE__, __LINE__);
+		exit(EXIT_FAILURE);
+		}
+	// define auxiliary array to store metropolis swap probabilities
+	err=posix_memalign( (void **) &(save_swap_prob), (size_t) DOUBLE_ALIGN, (size_t) num_swaps * sizeof(double));
+	if(err!=0)
+		{
+		fprintf(stderr, "Problems in allocating the acceptances array (%s, %d)\n", __FILE__, __LINE__);
+		exit(EXIT_FAILURE);
+		}
 	// set all probabilities to 0
 	for(k=0; k<num_swaps; k++)
 		metro_swap_prob[k]=0.0;
+		complete_swap_prob[k]=0.0;
+		save_swap_prob[k]=0.0;
 
 	is_even = num_swaps % 2;                   // check if num_swaps is even or not
 	num_even = (long) ((num_swaps+is_even)/2); // number or swaps for even replica
@@ -63,6 +80,26 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 	// swaps are done for all couples (i,j) where i=defect_dir and j !=i => three couples
 	i=param->d_defect_dir;
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	for(rep=0;rep<num_swaps;rep++)
+	{
+		for(m=0;m<param->d_volume;m++)
+		{
+			for(ii=0; ii<STDIM; ii++)
+			{
+				for(jj=ii+1; jj<STDIM; jj++)
+				{
+					complete_swap_prob[rep] += delta_action_swap(GC, geo, param, m, ii, jj, rep, rep+1);
+				}
+			}
+		}
+	}
+	for(rep=0;rep<num_swaps;rep++)
+	{
+		printf("Complete probability for swaping from %d to %d: %.12g\n",rep,rep+1,complete_swap_prob[rep]);
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// first group of swaps	
 	
 	// compute action differences
@@ -82,9 +119,9 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 			j = perp_dir[param->d_defect_dir][aux_i];
 			// contribution to action difference between replicas a and b of site r on plane (i,j)
 			metro_swap_prob[a] += delta_action_swap(GC, geo, param, r, i, j, a, b);
+			save_swap_prob[a] += delta_action_swap(GC, geo, param, r, i, j, a, b);
 			}		
 		}
-	
 	// do the swaps
 	#ifdef OPENMP_MODE
 	#pragma omp parallel for num_threads(NTHREADS) private(k)
@@ -96,7 +133,6 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 		metro_swap_prob[a] = exp(-metro_swap_prob[a]); // metropolis swap probability = exp{ - (swapped action - unswapped action) }
 		metropolis_single_swap(GC, a, b, metro_swap_prob[a], acc_counters);
 		}
-
 
 	// second group of swaps
 	
@@ -118,11 +154,9 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 			j = perp_dir[param->d_defect_dir][aux_i];
 			// contribution to action difference between replicas a and b of site r on plane (i,j)
 			metro_swap_prob[a] += delta_action_swap(GC, geo, param, r, i, j, a, b);
+			save_swap_prob[a] += delta_action_swap(GC, geo, param, r, i, j, a, b);
 			}
 		}
-	// delta action to compare
-	printf("Probability delta_action_swap: %.12g\n",metro_swap_prob[0]);
-	
 	// do the swaps
 	#ifdef OPENMP_MODE
 	#pragma omp parallel for num_threads(NTHREADS) private(k)
@@ -134,7 +168,10 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 		metro_swap_prob[a] = exp(-metro_swap_prob[a]); // metropolis swap probability = exp{ - (swapped action - unswapped action) }
 		metropolis_single_swap(GC,a,b,metro_swap_prob[a],acc_counters); // metropolis step
 		}
-	
+	for(rep=0;rep<num_swaps;rep++)
+	{
+		printf("Code's probability for swaping from %d to %d: %.12g\n",rep,rep+1,save_swap_prob[rep]);
+	}
 	// free aux array
 	free(metro_swap_prob);
 	}
