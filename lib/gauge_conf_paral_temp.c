@@ -94,10 +94,6 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 			}
 		}
 	}
-	for(rep=0;rep<num_swaps;rep++)
-	{
-		printf("Complete probability for swaping from %d to %d: %.12g\n",rep,rep+1,complete_swap_prob[rep]);
-	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// first group of swaps	
@@ -171,6 +167,7 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 	for(rep=0;rep<num_swaps;rep++)
 	{
 		printf("Code's probability for swaping from %d to %d: %.12g\n",rep,rep+1,save_swap_prob[rep]);
+		printf("Complete probability for swaping from %d to %d: %.12g\n",rep,rep+1,complete_swap_prob[rep]);
 	}
 	// free aux array
 	free(metro_swap_prob);
@@ -287,17 +284,23 @@ void metropolis_single_swap(Gauge_Conf *GC, int const a, int const b, double con
 void conf_translation(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param)
 	{
 	double aux;
-	int dir,i,jj;
-	long s,rr;
+	int dir,i;
+	//int jj;
+	long s;
+	//long rr;
 	Gauge_Conf aux_conf;
   
 	// extract random direction
-	aux=STDIM*casuale();
-	for(i=0;i<STDIM;i++)
-	{
-		if ( (aux>=i) && (aux<(i+1)) ) dir=i;
-	}
+	//aux=STDIM*casuale();
+	//for(i=0;i<STDIM;i++)
+	//{
+	//	if ( (aux>=i) && (aux<(i+1)) ) dir=i;
+	//}
 
+	// extract random direction on the untwisted plane
+	dir = (rand() > RAND_MAX/2) ? 0 : 3;
+	printf("%d\n",dir);
+	
 	// copy the conf in an auxiliary one 
 	init_gauge_conf_from_gauge_conf(&aux_conf, GC, param); // now aux_conf=GC
 
@@ -313,13 +316,13 @@ void conf_translation(Gauge_Conf *GC, Geometry const * const geo, GParam const *
 		equal(&(GC->lattice[r][j]), &(aux_conf.lattice[nnm(geo,r,dir)][j]) );
 		}
 
-	for(rr=0; rr<(param->d_volume); rr++)
-	{
-		for(jj=0; jj<param->d_n_planes; jj++)
-		{
-			GC->ztw[rr][jj] = aux_conf.ztw[nnm(geo,rr,dir)][jj];
-		}
-	}
+	//for(rr=0; rr<(param->d_volume); rr++)
+	//{
+	//	for(jj=0; jj<param->d_n_planes; jj++)
+	//	{
+	//		GC->ztw[rr][jj] = aux_conf.ztw[nnm(geo,rr,dir)][jj];
+	//	}
+	//}
 
 	// free auxiliary conf
 	free_twist_cond(&aux_conf, param);
