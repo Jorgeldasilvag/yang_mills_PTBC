@@ -226,7 +226,7 @@ void init_bound_cond(Gauge_Conf *GC, GParam const * const param, int const i)
 	}
 	}
 
-// initialization of the twist factors
+// initialization of the twist
 void init_twist_bound(Gauge_Conf *GC, GParam const * const param)
 {
 	long r;

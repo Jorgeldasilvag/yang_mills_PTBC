@@ -299,8 +299,8 @@ void conf_translation(Gauge_Conf *GC, Geometry const * const geo, GParam const *
 
 	// extract random direction on the untwisted plane
 	dir = (rand() > RAND_MAX/2) ? 0 : 3;
-	printf("%d\n",dir);
-	
+	//printf("%d\n",dir);
+
 	// copy the conf in an auxiliary one 
 	init_gauge_conf_from_gauge_conf(&aux_conf, GC, param); // now aux_conf=GC
 
