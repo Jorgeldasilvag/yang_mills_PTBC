@@ -287,8 +287,8 @@ void metropolis_single_swap(Gauge_Conf *GC, int const a, int const b, double con
 void conf_translation(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param)
 	{
 	double aux;
-	int dir,i;
-	long s;
+	int dir,i,jj;
+	long s,rr;
 	Gauge_Conf aux_conf;
   
 	// extract random direction
@@ -305,13 +305,20 @@ void conf_translation(Gauge_Conf *GC, Geometry const * const geo, GParam const *
 	#ifdef OPENMP_MODE
 	#pragma omp parallel for num_threads(NTHREADS) private(s)
 	#endif
-	for(s=0; s<(param->d_n_planes)*(param->d_volume); s++)
-	{
+	for(s=0;s<(STDIM*(param->d_volume));s++)
+		{
 		// s = j * volume + r
 		long r = s % (param->d_volume);
 		int j = (int) ( (s-r)/(param->d_volume) );
-		if(j<STDIM) equal(&(GC->lattice[r][j]), &(aux_conf.lattice[nnm(geo,r,dir)][j]) );
-		GC->ztw[r][j] = aux_conf.ztw[nnm(geo,r,dir)][j];
+		equal(&(GC->lattice[r][j]), &(aux_conf.lattice[nnm(geo,r,dir)][j]) );
+		}
+
+	for(rr=0; rr<(param->d_volume); rr++)
+	{
+		for(jj=0; jj<param->d_n_planes; jj++)
+		{
+			GC->ztw[rr][jj] = aux_conf.ztw[nnm(geo,rr,dir)][jj];
+		}
 	}
 
 	// free auxiliary conf
