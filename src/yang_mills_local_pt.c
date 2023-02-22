@@ -28,9 +28,12 @@ void real_main(char *in_file)
 	Acc_Utils acc_counters;
 	int L_R_swap=1;
 
+	//For some checks in the action and twist
 	//long r;
-	//int i,j;
+	//int ii,jj;
+	//int rep;
 	//double re_tr_plaq_a_i, Ka_i;
+	//double plaqs, plaqt, pla;
 	//double Sa_i=0.0;
 
 	char name[STD_STRING_LENGTH], aux[STD_STRING_LENGTH];
@@ -73,20 +76,36 @@ void real_main(char *in_file)
 	// init acceptances array
 	init_swap_acc_arrays(&acc_counters, &param);
 
+	// Checking the twist is correctly initialized in all replicas 
+	//for(rep=0; rep<(param.d_N_replica_pt); rep++)
+	//{
+	//	for(r=0; r<(param.d_volume); r++)
+	//	{
+	//		for(ii=0; ii<STDIM; ii++)
+	//		{
+	//			for(jj=ii+1; jj<STDIM; jj++)
+	//			{
+	//				printf("%d %ld %.12g %.12g\n",planeid(ii,jj),r,creal(GC[rep].ztw[r][planeid(ii,jj)]),cimag(GC[rep].ztw[r][planeid(ii,jj)]));
+	//			}
+	//		}
+	//	}
+	//}
+
+	// Checking the initial action is correct with the twisted background
 	//Sa_i = 0.0;
 	//for(r=0; r<(param.d_volume); r++)
 	//{
-	//	for(i=0; i<STDIM; i++)
+	//	for(ii=0; ii<STDIM; ii++)
 	//	{
-	//		for(j=i+1; j<STDIM; j++)
+	//		for(jj=ii+1; jj<STDIM; jj++)
 	//		{
-	//			re_tr_plaq_a_i=plaquettep(&(GC[0]), &geo, &param, r, i, j);
-	//			Ka_i=(GC[0].C[r][i])*(GC[0].C[nnp(&geo, r, i)][j])*(GC[0].C[nnp(&geo, r, j)][i])*(GC[0].C[r][j]);
+	//			re_tr_plaq_a_i=plaquettep(&(GC[0]), &geo, &param, r, ii, jj);
+	//			Ka_i=(GC[0].C[r][ii])*(GC[0].C[nnp(&geo, r, ii)][jj])*(GC[0].C[nnp(&geo, r, jj)][ii])*(GC[0].C[r][jj]);
 	//			Sa_i+=(1.0-Ka_i*re_tr_plaq_a_i);
 	//		}
 	//	}
 	//}
-	//Sa_i*=param.d_beta*(double)NCOLOR;
+	//Sa_i*=param.d_beta/(double)NCOLOR;
 	//printf("%.12g\n",Sa_i);
 
 	//plaquette(&(GC[0]), &geo, &param, &plaqs, &plaqt);

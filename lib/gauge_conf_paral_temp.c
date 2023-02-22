@@ -164,11 +164,11 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 		metro_swap_prob[a] = exp(-metro_swap_prob[a]); // metropolis swap probability = exp{ - (swapped action - unswapped action) }
 		metropolis_single_swap(GC,a,b,metro_swap_prob[a],acc_counters); // metropolis step
 		}
-	for(rep=0;rep<num_swaps;rep++)
-	{
-		printf("Code's probability for swaping from %d to %d: %.12g\n",rep,rep+1,save_swap_prob[rep]);
-		printf("Complete probability for swaping from %d to %d: %.12g\n",rep,rep+1,complete_swap_prob[rep]);
-	}
+	//for(rep=0;rep<num_swaps;rep++)
+	//{
+	//	printf("Code's probability for swaping from %d to %d: %.12g\n",rep,rep+1,save_swap_prob[rep]);
+	//	printf("Complete probability for swaping from %d to %d: %.12g\n",rep,rep+1,complete_swap_prob[rep]);
+	//}
 	// free aux array
 	free(metro_swap_prob);
 	}
@@ -283,8 +283,9 @@ void metropolis_single_swap(Gauge_Conf *GC, int const a, int const b, double con
 // direction is chosen randomly, verse is always positive
 void conf_translation(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param)
 	{
-	double aux;
-	int dir,i;
+	//double aux;
+	int dir;
+	//int i;
 	//int jj;
 	long s;
 	//long rr;
