@@ -261,6 +261,7 @@ void init_twist_bound(Gauge_Conf *GC, GParam const * const param)
 			for(nu=mu+1; nu<STDIM; nu++)
 				if (cartcoord[mu] == 0 && cartcoord[nu] == 0)
 				{
+					//printf("%d %d\n",cartcoord[mu],cartcoord[nu]);
 					GC->ztw[r][planeid(mu,nu)] = cexp(I*PI2*(param->d_k_twist[planeid(mu,nu)])/(double)NCOLOR);
 					GC->ztw[r][planeid(nu,mu)] = cexp(-I*PI2*(param->d_k_twist[planeid(mu,nu)])/(double)NCOLOR);
 				}

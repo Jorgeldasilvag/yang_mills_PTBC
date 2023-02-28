@@ -164,13 +164,17 @@ void swap(Gauge_Conf *GC, Geometry const * const geo, GParam const * const param
 		metro_swap_prob[a] = exp(-metro_swap_prob[a]); // metropolis swap probability = exp{ - (swapped action - unswapped action) }
 		metropolis_single_swap(GC,a,b,metro_swap_prob[a],acc_counters); // metropolis step
 		}
+	//printf("##############################################\n");
 	//for(rep=0;rep<num_swaps;rep++)
 	//{
 	//	printf("Code's probability for swaping from %d to %d: %.12g\n",rep,rep+1,save_swap_prob[rep]);
 	//	printf("Complete probability for swaping from %d to %d: %.12g\n",rep,rep+1,complete_swap_prob[rep]);
 	//}
+	//printf("##############################################\n");
 	// free aux array
 	free(metro_swap_prob);
+	free(save_swap_prob);
+	free(complete_swap_prob);
 	}
 
 double delta_action_swap(Gauge_Conf const * const GC, Geometry const * const geo, GParam const * const param,

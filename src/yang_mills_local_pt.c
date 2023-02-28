@@ -29,8 +29,8 @@ void real_main(char *in_file)
 	int L_R_swap=1;
 
 	//For some checks in the action and twist
-	//long r;
-	//int ii,jj;
+	//long rr;
+	//int ii,jj,cartcoord[STDIM];
 	//int rep;
 	//double re_tr_plaq_a_i, Ka_i;
 	//double plaqs, plaqt, pla;
@@ -76,31 +76,16 @@ void real_main(char *in_file)
 	// init acceptances array
 	init_swap_acc_arrays(&acc_counters, &param);
 
-	// Checking the twist is correctly initialized in all replicas 
-	//for(rep=0; rep<(param.d_N_replica_pt); rep++)
-	//{
-	//	for(r=0; r<(param.d_volume); r++)
-	//	{
-	//		for(ii=0; ii<STDIM; ii++)
-	//		{
-	//			for(jj=ii+1; jj<STDIM; jj++)
-	//			{
-	//				printf("%d %ld %.12g %.12g\n",planeid(ii,jj),r,creal(GC[rep].ztw[r][planeid(ii,jj)]),cimag(GC[rep].ztw[r][planeid(ii,jj)]));
-	//			}
-	//		}
-	//	}
-	//}
-
 	// Checking the initial action is correct with the twisted background
 	//Sa_i = 0.0;
-	//for(r=0; r<(param.d_volume); r++)
+	//for(rr=0; rr<(param.d_volume); rr++)
 	//{
 	//	for(ii=0; ii<STDIM; ii++)
 	//	{
 	//		for(jj=ii+1; jj<STDIM; jj++)
 	//		{
-	//			re_tr_plaq_a_i=plaquettep(&(GC[0]), &geo, &param, r, ii, jj);
-	//			Ka_i=(GC[0].C[r][ii])*(GC[0].C[nnp(&geo, r, ii)][jj])*(GC[0].C[nnp(&geo, r, jj)][ii])*(GC[0].C[r][jj]);
+	//			re_tr_plaq_a_i=plaquettep(&(GC[0]), &geo, &param, rr, ii, jj);
+	//			Ka_i=(GC[0].C[rr][ii])*(GC[0].C[nnp(&geo, rr, ii)][jj])*(GC[0].C[nnp(&geo, rr, jj)][ii])*(GC[0].C[rr][jj]);
 	//			Sa_i+=(1.0-Ka_i*re_tr_plaq_a_i);
 	//		}
 	//	}
@@ -111,6 +96,25 @@ void real_main(char *in_file)
 	//plaquette(&(GC[0]), &geo, &param, &plaqs, &plaqt);
 	//pla = 0.5*(plaqs+plaqt);
 	//printf("%.12g\n",pla);
+
+	// Checking the twist is correctly initialized in all replicas 
+	//for(rep=0; rep<(param.d_N_replica_pt); rep++)
+	//{
+	//	for(rr=0; rr<(param.d_volume); rr++)
+	//	{
+	//		si_to_cart(cartcoord, rr, &param);
+	//		for(ii=0; ii<STDIM; ii++)
+	//		{
+	//			for(jj=ii+1; jj<STDIM; jj++)
+	//			{
+	//				Ka_i=(GC[rep].C[rr][ii])*(GC[rep].C[nnp(&geo, rr, ii)][jj])*(GC[rep].C[nnp(&geo, rr, jj)][ii])*(GC[rep].C[rr][jj]);
+	//				printf("%.12g %.12g %.12g %.12g\n",GC[rep].C[rr][ii],GC[rep].C[nnp(&geo, rr, ii)][jj],GC[rep].C[nnp(&geo, rr, jj)][ii],GC[rep].C[rr][jj]);
+	//				printf("%d %d %d %d %d %d %.12g %.12g %.12g\n",cartcoord[0],cartcoord[1],cartcoord[2],cartcoord[3],
+	//					ii,jj,creal(GC[rep].ztw[rr][planeid(ii,jj)]),cimag(GC[rep].ztw[rr][planeid(ii,jj)]),Ka_i);
+	//			}
+	//		}
+	//	}	
+	//}
 
 	// Monte Carlo begin
 	time(&time1);
@@ -233,8 +237,8 @@ void print_template_input(void)
 		fprintf(fp,"\n");
 		fprintf(fp, "sample     1\n");
 		fprintf(fp, "thermal    0\n");
-		fprintf(fp, "overrelax  5\n");
-		fprintf(fp, "measevery  1\n");
+		fprintf(fp, "overrelax  12\n");
+		fprintf(fp, "measevery  12\n");
 		fprintf(fp,"\n");
 		fprintf(fp, "start                    3  # 0=ordered  1=random  2=from saved configuration 3=cold twisted(only for 12 dir)\n");
 		fprintf(fp, "saveconf_back_every      5  # if 0 does not save, else save backup configurations every ... updates\n");
@@ -246,9 +250,9 @@ void print_template_input(void)
 		fprintf(fp, "topcharge_tcorr_meas  0  # 1=YES, 0=NO\n");
 		fprintf(fp,"\n");
 		fprintf(fp, "#for gradient flow evolution\n");
-		fprintf(fp, "gfstep      0.01    # integration step for gradient flow\n");
-		fprintf(fp, "num_gfsteps 100     # number of integration steps for gradient flow\n");
-		fprintf(fp, "gf_meas_each 100       # compute observables every <gf_meas_each> integration steps during the gradient flow\n");
+		fprintf(fp, "gfstep      0.001    # integration step for gradient flow\n");
+		fprintf(fp, "num_gfsteps 0     # number of integration steps for gradient flow\n");
+		fprintf(fp, "gf_meas_each 1000       # compute observables every <gf_meas_each> integration steps during the gradient flow\n");
 		fprintf(fp,"\n");
 		fprintf(fp, "# output files\n");
 		fprintf(fp, "conf_file             conf.dat\n");
